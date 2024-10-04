@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo QR của Nhân</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" />
+</head>
+<body>
+    <!-- Form without bootstrap -->
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div class="auth-action-left">
+                <div class="auth-form-outer">
+                    <h2 class="auth-form-title">
+                        Tạo QR VietQR
+                    </h2>
+                    <div class="auth-external-container">
+                        <div class="auth-external-list">
+                        
+                        </div>
+                    </div>
+                    <form id="transferForm" class="transferForm">
+                        <input type="text" class="auth-form-input" id="account_name" placeholder="Tên Tài khoản" onblur="convertToUnaccentedVietnamese(this)">
+                        <input type="text" class="auth-form-input" id="bank_name" placeholder="Ngân hàng" onblur="convertToUnaccentedVietnamese(this)">
+                        <div class="input-icon">
+                            <input type="text" class="auth-form-input" id="account_number" placeholder="Số tài khoản">
+                        </div>
+                        <input type="text" class="auth-form-input" id="amount" placeholder="Số tiền">  
+                        <input type="text" class="auth-form-input" id="transfer_message" placeholder="Nội dung chuyển khoản">     
+                        </label>
+                        <div>
+                            <input type="submit" value="Tạo QR" class="auth-submit">
+                        </div>
+                  </form>
+                </div>
+            </div>
+            <div class="auth-action-right">
+                <div class="auth-form-outer2">
+                    <h2 class="auth-form-title">
+                        QR của bạn                   
+                  </h2></div>
+                  <div class="auth-image">
+                    <div id="resultContainer">
+                      <div class="image-mo">
+                        <img id="defaultQRImage" src="https://vietqr.net/img/default-qr.8c528dac.png" alt="Default QR Code">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+    </div>
+    <script>
+      function convertToUnaccentedVietnamese(inputField) {
+            var accentedCharacters = "àáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵÀÁẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬĐÈÉẺẼẸÊẾỀỂỄỆÌÍỈĨỊÒÓỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÙÚỦŨỤƯỨỪỬỮỰỲÝỶỸỴ";
+            var unaccentedCharacters = "aaaaaaaaaaaaaaaaadeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyAAAAAAAAAAAAAAAAADEEEEEEEEEIIIIIOOOOOOOOOOOOOOOOOUUUUUUUUUUUYYYYY";
+            var inputText = inputField.value;
+            var outputText = "";
+            for (var i = 0; i < inputText.length; i++) {
+                var index = accentedCharacters.indexOf(inputText[i]);
+                outputText += index !== -1 ? unaccentedCharacters[index] : inputText[i];
+            }
+            inputField.value = outputText;
+        }
+
+        document.getElementById("transferForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định của submit
+            
+            var accountName = encodeURIComponent(document.getElementById("account_name").value); // Mã hóa giá trị của trường Tên Tài khoản 
+            var bankName = encodeURIComponent(document.getElementById("bank_name").value); // Mã hóa giá trị của trường Tên Ngân hàng
+            var accountNumber = encodeURIComponent(document.getElementById("account_number").value); // Mã hóa giá trị của trường Số tài khoản
+            var amount = encodeURIComponent(document.getElementById("amount").value.trim() || " "); // Mã hóa giá trị của trường Số tiền, nếu không có giá trị thì điền khoảng trắng
+            var transferMessageInput = document.getElementById("transfer_message").value.trim();
+            var transferMessage = encodeURIComponent(transferMessageInput ? transferMessageInput : decodeURIComponent(accountName) + " chuyen khoan"); // Nếu không có nội dung chuyển khoản thì tự động điền theo logic
+            var imageUrl = "https://img.vietqr.io/image/" + bankName + "-" + accountNumber + "-print.png?amount=" + amount + "&addInfo=" + transferMessage + "&accountName=" + accountName; // Tạo link hình ảnh dựa trên dữ liệu nhập vào
+
+            // Hiển thị hình ảnh và URL dưới dạng văn bản
+            var resultContainer = document.getElementById("resultContainer");
+            var imageElement = document.createElement("img");
+            imageElement.src = imageUrl;
+            resultContainer.innerHTML = ''; // Xóa nội dung cũ của resultContainer trước khi thêm hình ảnh và URL
+            resultContainer.appendChild(imageElement);
+        });
+    </script>
+</body>
+</html>
